@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternative Fueling Station Locator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        #afdc-stations {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Find an Alternative Fueling Station Near You</h1>
+    <div id="afdc-stations">
+        <div id="afdc-stations-loading">Loading alternative fueling station locator...</div>
+    </div>
+    <script type="text/javascript">
+        window.afdcStationsOptions = {
+            "country": "all",
+            "localeCountry": "US",
+            "path": "/analyze",
+            "query": {
+                "region": "US-CA",
+                "show_map": "true",
+                "fuel": ["ELEC"],
+                "ev_levels": ["all"],
+                "status": ["E", "P", "T"],
+                "access": ["public", "private"]
+            }
+        };
+    </script>
+    <script async defer src="https://widgets.nrel.gov/afdc/station-locator/assets/embed.js"></script>
+    <noscript>Please enable JavaScript to view the alternative fueling station locator.</noscript>
+</body>
+</html>
