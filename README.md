@@ -4,3 +4,11 @@ The adoption of electric vehicles (EVs) is rapidly increasing, presenting both o
 
 - *EVSE.ipynb utilizes data from AFDC to create a simple Python Folium map with added shapefiles from Caltrans Open data.*
 - *Sample API GET Calls to '[Openchargemap](https://openchargemap.org/site)','[CalTrans HWY Data](https://caltrans-gis.dot.ca.gov/arcgis/rest/services/CHhighway)', '[AFDC](https://developer.nrel.gov/)' are provided.*
+
+- *Additional Layers using from '[CA Electric Vehicle Charging Station Permit Streamlining Map](https://business.ca.gov/industries/zero-emission-vehicles/plug-in-readiness/)'
+
+- Future Implementation of CalTrans Performance Measurement System '[(PeMS)](https://pems.dot.ca.gov/)' would provide more robust display of bottlenecks versus overlaying static shapefiles
+
+#### References: 
+- '[Total Public and Share Private Chargers, *California Energy Commission*](https://tableau.cnra.ca.gov/t/CNRA_CEC_PUBLIC/views/DMVDataPortal/ZEVInfrastructure?:embed=y&:isGuestRedirectFromVizportal=y&:display_count=n&:showAppBanner=false&:origin=viz_share_link&:showVizHome=n)'
+- '[Priority Populations, *California Climate Investments*](https://gis.carb.arb.ca.gov/portal/apps/experiencebuilder/experience/?id=6b4b15f8c6514733972cabdda3108348)
