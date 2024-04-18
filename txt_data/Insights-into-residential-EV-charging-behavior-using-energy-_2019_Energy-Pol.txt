@@ -1,0 +1,414 @@
+Contents lists available at ScienceDirect
+Energy Policy
+journal homepage: www.elsevier.com/locate/enpol
+Insights into residential EV charging behavior using energy meter data
+Jae D. Kim
+Industrial and Systems Engineering, University of San Diego, 5998 Alcala Park, San Diego, CA 92110, USA
+ARTICLE INFO
+Keywords:
+Electric vehicle (EV) chargingTime-of-use (TOU)
+Energy loadsABSTRACT
+Mass adoption of the plug-in electric vehicle (EV) technology is imperative for the rapid electri ﬁcation of the
+transportation sector to mitigate catastrophic eﬀ ects from climate change. Rapid integration of a large number of
+EVs will inevitably cause uncertainty and variability on the operation of the existing electric power system.
+There is high uncertainty on not only the speed and scale of EV adoption but also the EV energy and powerrequirements that depends on EV charging patterns. This study uses energy meter-level data from the San Diegoregion to analyze the energy load pro ﬁles of residential customers under the time-of-use (TOU) rate with and
+without EV charging requirements. Unlike previous forecasts on the eﬀ ects of EV charging loads, the energy load
+proﬁle of TOU customers with EVs reveal a “twin demand peak ”where there is a peak demand during the
+evening hours and another at midnight. Results reveal potential issues for grid operations with greater EV
+adoption and the importance of careful TOU rate design.
+1. Introduction
+Major studies have demonstrated the urgent need for a rapid elec-
+triﬁcation of the transportation sector to mitigate catastrophic e ﬀects
+from climate change ( DOE, 2010; MIT, 2010 ;Slezak, 2013). Large re-
+ductions in greenhouse gas (GHG) emissions from the transportation
+sector requires a mix of technology solutions including a rapid elec-
+triﬁcation of the passenger vehicle sector to reach emissions reduction
+targets ( NRC, 2013 ). Governments around the world have taken direct
+action to promote the adoption of the plug-in electric vehicle1(EV)
+using new legislation, tax incentives, and other policy instruments.California's Governor Brown has initiated the zero-emission vehicle
+(ZEV) mandate that targets the deployment of 1.5 million ZEVs by 2025
+(CARB, 2018). Rapid integration of such a large number of EVs will
+inevitably cause uncertainty and variability on the operation of the
+existing electric power system. There is high uncertainty on not only the
+speed and scale of EV adoption but also the EV energy and power re-
+quirements. Furthermore, there is an additional unknown human factor
+in the anticipated mass adoption of EVs that clouds the forecasted
+charging load requirements: when will EV drivers actually charge their
+vehicles? These uncertainties have contributed to a condition where
+there is no clear roadmap on building the appropriate EV charging in-
+frastructure that must be strategically constructed to foster a rapid,
+seamless transition to transportation electri ﬁcation.1.1. Literature review on EV charging behavior
+Numerous studies have attempted to model and estimate EV char-
+ging loads under various scenarios. These studies must make certainassumptions on the daily EV charging patterns that are often di ﬃcult to
+validate. Many studies formulate charging scenarios without any actualEV charging data; rather, the scenarios are built based on factors such
+as travel patterns. A number of studies use survey travel data to create
+charging scenarios. Sioshani and Denholm (2009) considered the
+“wherever, whenever ”charging case where charging occurs whenever
+vehicles are parked based on travel survey data of the St. Louis me-
+tropolitan area. Wang et al. (2017) forecasted the EV charging demand
+using synthetic U.S. travel data and electricity pricing. Kang and Recker
+(2009) used the 2000– 2001 California Statewide Household Travel
+Survey to consider four di ﬀerent scenarios including the case where
+vehicles charge whenever they are parked as well as controlled o ﬀ
+-peak and public charging cases. Axsen et al. (2011) used a sample of
+travel survey data of new vehicle buyers in California to consider threediﬀerent charging scenarios and also incorporated the availability of an
+electrical outlet within 25 feet as a prerequisite to charging. Kim and
+Rahimi (2014) used travel pattern data at the city level to determine
+when EVs would be available for charging then assumed di ﬀerent EV
+charging scenarios. Weiller (2011) used the National Household Travel
+Survey to create uncontrolled and delayed charging scenarios whererestrictions are placed on certain charging times. Kelly et al. (2012)
+expanded on Weiller's recharging scenarios by incorporating
+https://doi.org/10.1016/j.enpol.2019.02.049
+Received 30 November 2018; Received in revised form 15 February 2019; Accepted 17 February 2019E-mail address: jaedkim@sandiego.edu .
+1In this article, the term “EV”refers strictly to plug-in electric vehicles.Energy Policy 129 (2019) 610–618
+Available online 27 February 2019
+0301-4215/ © 2019 Elsevier Ltd. All rights reserved.
+Tdemographic in ﬂuences on charging behavior. There are also studies
+that assume an ideal scenario where charging primarily occurs during
+late night or the “oﬀ-peak ”hours so that the overall energy load be-
+comes more leveled ( EPRI, 2007 ;Kintner-Meyer et al., 2007; Stephan
+and Sullivan, 2008).
+Recently, the California Energy Commission (CEC) released a major
+study on anticipating the required EV charging infrastructure to support
+the increasing number of EVs on the road (see Fig. 1). One of the key
+results from the study is that the expected peak EV charging load isnearly 1 GW at 7:40 p.m. on a weekday for the entire state. The ex-pected peak on weekends is nearly 800 MW at 6:50 p.m. These results
+suggest that EV charging would add to the existing regional load and
+increase peak demand, exacerbating the existing problems associated
+with excess renewable generation and rapid generation ramping.
+2The
+vast majority of the EV charging is expected to take place at people'shomes (i.e., residential). Therefore, the e ﬀect from residential EV
+charging (L1 & L2) is expected to be signi ﬁcant in both the total energy
+load and the shape of the load pro ﬁle (see Fig. 1). One key takeaway
+from this study is that the forecast of EV charging loads primarilyhinges on the assumption that EV drivers charge their vehicles based on
+travel patterns. That is, most EVs begin charging when EV drivers arrive
+at home after work during peak hours (approximately 5 –8 p.m.). This
+study attempts to shed light on this assumption using actual meter-levelenergy data from EV owners. Strong evidence against such charging
+behavior assumption would have signi ﬁcant impact on the validity and
+accuracy of the EV charging load forecasts, which would consequentlyhave an impact on energy policy.
+1.2. SDGE energy load pro ﬁle
+This article focuses on the San Diego Gas & Electric (SDGE) service
+territory that serves an area spanning from San Diego County to parts of
+Orange County (see Fig. 2). SDGE is one of the three major investor-
+owned utilities (IOU) in California. It supplies power to roughly 1.4million businesses and residential customers in a 4,100 square-mile
+service area ( SDGE, 2018a ).
+SDGE's load pro ﬁle is primarily composed of 4 sectors: commercial
+& industry, residential, agriculture, and others (e.g., street lights). A
+summary of the energy consumption by each sector is shown in Table 1.
+Although the overall energy consumption is dominated by the
+commercial/industry sector, the overall load shape is dis-
+proportionately a ﬀected by the residential sector. For example, the
+peak demand occurs when the residential load reaches its peak (roughly
+between 5 and 8 p.m.) throughout the year (see Fig. 3). Therefore,
+changes to the residential load pro ﬁle would have a signi ﬁcant eﬀect on
+the overall system peak and load pro ﬁle.1.3. SDGE rate groups
+There are roughly 30 di ﬀerent billing rate groups within the re-
+sidential customers in the SDGE service territory. Many billing rates are
+special rates with very few actual customers. The majority of the re-
+sidential customers fall under the “DR”rate group.
+3There are nu-
+merous time-of-use (TOU) rate groups. Within the TOU group, there arealso speci ﬁc rate groups that are designated explicitly for residential
+customers who charge an EV(s) on the premise.
+1.3.1. Standard rate plan (DR)
+The DR rate group is the default rate plan for residential customers.
+It is a tiered-pricing system with increasing rates with increasing usage.
+Each customer is given a monthly baseline usage allowance based on
+their location (i.e., climate zones). If a customer exceeds the baseline
+allowance by a certain threshold, then the rates increase from Tier 1 to
+Tier 2. There is a range of allowable usage within Tier 2. Once a cus-
+tomer exceeds the Tier 2 range, then the rates increase to the high usage
+charge (HUC) level. An example of SDGE's DR Tier ranges is shown in
+Fig. 4.
+The baseline allowance and the high usage charge threshold vary
+depending on the region and time of year. The coastal regions classi ﬁed
+as the “coastal ”climate zone have the lowest baseline allowance be-
+cause it enjoys milder temperatures (less cooling and heating needs).
+Fig. 1. Forecast of California's EV charging loads for a typical weekday/weekend in year 2025 ( CEC, 2018b ).
+Fig. 2. Map of the SDGE service territory in Southern California (source: SDGE,
+2018a ).
+2Often referred as the California “duck curve” (CAISO, 2016 ).3DRLI is also included which is comprised of DR customers who quality for
+California's CARE program for low-income households. See http://www.cpuc.
+ca.gov/General.aspx?id=976 for more information.J.D. Kim Energy Policy 129 (2019) 610–618
+611Inland regions progressively have higher baselines allowances because
+of the higher temperatures (higher cooling and heating needs). The
+allowances are higher in the winter months because the overall system
+load is signi ﬁcantly lower (see Fig. 3). A summary of the baseline al-
+lowance and high usage charge thresholds are shown in Table 2.1.3.2. Time-of-use (TOU) plans
+SDGE o ﬀers time-of-use (TOU) pricing plans to its residential cus-
+tomers. In a standard TOU plan, each day is broken into on-peak and
+oﬀ-peak time zones with energy costing less during the o ﬀ-peak hours.
+Similar to the standard DR plan, the TOU plans are also tiered plans soif a customer exceeds the baseline allowance by a certain threshold, the
+rates increase.
+4An example of the tier pricing structures in TOU plans is
+shown in Fig. 5.
+TOU rate structure
+Within the TOU pricing plans, there are numerous types and var-
+iations that are often a result of experimental rates becoming perma-nent, updated, or removed in subsequent years. Much of the di ﬀerence
+between these plans are minimal within the time frame of this study sothe TOU plans are grouped into two main types for brevity: TOU and
+EVTOU.
+TOU –This is the default TOU rate plan. The plan has a “peak” andTable 1
+Annual energy consumption by sector in SDGE service territory (data source: CEC, 2018a ).
+Year Commercial/Industry Residential Agriculture Others
+GWh (%Total) GWh (%Total) GWh (%Total) GWh (%Total)
+2014 13,319 62.14 7,670 35.79 349 1.63 94 0.44
+2015 13,434 62.42 7,682 35.70 315 1.47 90 0.42
+2016 13,193 62.42 7,553 35.73 310 1.47 81 0.38
+Fig. 3. Average daily energy load in SDGE service territory based on consumer sector.
+Fig. 4. Example of SDGE's standard residential rate plan
+structure based on usage (source: SDGE, 2018b ).
+Table 2Example of baseline allowance and high usage charge in the SDGE territory in
+2018.
+Climate Zone Summer Winter
+Baseline
+Allowance(kWh)High UsageCharge(kWh)BaselineAllowance(kWh)High UsageCharge(kWh)
+Coastal 249 996 405 1620
+Inland 303 1212 474 1896
+Mountain 495 1980 780 3120
+Desert 555 2220 600 2400
+4Under the SDGE TOU rate plans, there are two tiers rather than three.J.D. Kim Energy Policy 129 (2019) 610–618
+612“oﬀ-peak ”time intervals with di ﬀerent rates.
+EVTOU –This type of plan is intended for residential customers with
+electric vehicle (EV) charging loads.
+Under each TOU plan, there are speci ﬁc hours ( “blocks ”) that cor-
+respond to a time-dependent rate. Examples of such time blocks are o ﬀ-
+peak, on-peak and semi-peak hours. These time blocks can vary de-
+pending on the day of the week (e.g., weekday vs. weekend) and time of
+the year (summer vs. winter). A visual mapping of the di ﬀerent time
+blocks for each TOU rate plan is shown in Tables 3 and 4. For all plans,
+the time blocks corresponds to the study's scope, which is from January
+1st, 2016 to December 31, 2017. Based on survey of EV owners, roughly
+73% of EV owners were under some type special EV electric rate plan
+between the years 2013 and 2015 ( CSE, 2018). It is highly likely that
+this percentage is even higher for the study's time span and future years
+due to greater awareness and availability of EVTOU plans.
+One of key features revealed in the mapping of the TOU time blocks
+is the consistent penalty on energy consumption during late afternoon/
+evening hours with the “on-peak ”rates (see Tables 3 and 4). There is
+also a consistent incentive for higher energy consumption with the“super o ﬀ-peak ”rates typically from midnight to early morning.
+2. Methodology and data
+Meter-level electricity consumption data for rate payers in the SDGE
+service territory was collected for the year 2016 and 2017. The analysis
+presented in this article has a scope that is limited to residential load
+data, which includes energy consumption in 1-hour intervals.2.1. Regional data coverage
+This study includes meter level data of roughly 1.5 million re-
+sidential customers across the city of San Diego and two out of four
+“climate zones ”. The SDGE service territory is divided into 30 di ﬀerent
+specialized regions designated as “Towns ”. Town 1 is the largest region
+which captures the city of San Diego. Each Town can span across
+multiple climate zones. For example, the city of San Diego is Town 1 but
+spans across climate zones 1, 2 and 4.
+The number of data points vary depending on each Town and rate
+group. This study focuses on three regions –city of San Diego (Town 1),
+Coastal Zone and Inland Zone. Both the Coastal and Inland Zones ex-clude customers from Town 1 (i.e., city of San Diego). The Mountain
+and Desert Climate Zones are excluded from the study because of po-tential privacy issues due to the small number of customers for the TOU
+and EVTOU rate groups. The sample size (i.e., number of unique cus-
+tomer accounts) for each region's rate groups for the study is shown in
+Table 5 .
+3. Results
+The following sections summarize the results from analyzing the
+meter-level energy consumption data for the residential customers in
+the SDGE region. The results are segmented by three main regions,
+weekday or weekend and the major rate groups –DR, TOU and EVTOU.
+All load pro ﬁles represent the average hourly load for a given rate
+group.
+Fig. 5. Example of SDGE's TOU pricing plan for residential customers (source: SDGE, 2018c ).
+Table 3
+Typical weekday time blocks under TOU plans.J.D. Kim Energy Policy 129 (2019) 610–618
+6133.1. DR load pro ﬁles
+The DR rate group represent the most common customer energy
+proﬁle for any given region. The results closely follow SDGE's overall
+residential energy load pro ﬁles (see Fig. 3). The results for the DR group
+in San Diego is shown in Fig. 6. The results indicate a peak energy
+demand in the evening hours similar to the region's overall energy load
+proﬁle (see Fig. 3 ). The energy load on weekends tend to be higher
+throughout the day regardless of time of year.
+The results for the DR group in the Coastal and Inland Zones is
+shown in Fig. 7. The two regions on average have higher loads than the
+same group in San Diego throughout the year. The Inland Zone has
+higher loads relative to the Coastal Zone especially during the summer
+months (Q3). This result is expected because the Inland Zone has higher
+summer temperatures leading to greater cooling needs. The overall
+shape of the loads for all regions seem consistent for any given time ofyear. There is a single main peak demand occurrence in the evening
+between 5 and 8 p.m.
+3.2. TOU load proﬁ les
+The average energy load for customers in the TOU rate group is
+shown in Figs. 8 and 9 for San Diego and the two climate zones, re-
+spectively. Similar to the DR group, the results for the TOU group in-
+dicate a peak energy demand in the evening hours. Some key di ﬀer-
+ences between the two groups are the overall higher energy load levelsfor the TOU group and signi ﬁcantly higher energy loads for the regions
+outside of San Diego. Compared to the DR group, each region's TOUrate customers consume signi ﬁcantly more energy throughout the day
+regardless of time of the year. Despite the higher electric rates duringpeak evening hours, customers under the TOU plans still consume more
+electricity during the peak hours versus non-TOU plan customers. TOU
+rate customers in both the Coastal and Inland climate zones consume
+signiﬁcantly more energy relative to the comparable group in San
+Diego. Some factors that may explain this result may be di ﬀerences in
+the square footage of homes, income and climate.
+3.3. EVTOU load proﬁ les
+The average energy load for customers in the EVTOU rate group is
+shown in Figs. 10 and 11 for San Diego and the two climate zones,
+respectively. Customers in this group on average have the highest en-
+ergy load most likely attributable to the EV charging load requirements.
+Similar to the results in other rate groups, customers outside of San
+Diego (i.e., Coastal and Inland Zones) have signi ﬁcantly higher energy
+loads. More importantly, however, all three regions exhibit energy loadTable 4
+Typical weekend time blocks under TOU plans.
+Table 5Sample size for each rate group by region.
+Region Rate Group Sample Size
+San Diego DR 634,539
+TOU 11,305
+EVTOU 6,109
+Coastal Zone (excluding San Diego) DR 422,521
+TOU 7,134
+EVTOU 7,331
+Inland Zone (excluding San Diego) DR 427,369
+TOU 10,466
+EVTOU 3,487
+Total: 1,530,261
+Fig. 6. City of San Diego average hourly load for the DR/DRLI residential rate group (Q1: Jan –Mar, Q2: Apr –Jun, Q3: Jul –Sep, Q4: Oct –Dec).J.D. Kim Energy Policy 129 (2019) 610–618
+614proﬁles that have “twin peaks ”where two energy peaks arise. The ﬁrst
+peak energy demand occurs as expected during evening hours (between
+5 and 8 p.m.). A second peak energy demand occurs at midnight re-
+gardless of region. This second peak at midnight can be directly at-
+tributed to the rate structure. Under the EVTOU plans, there is a superoﬀ-peak period that begins at midnight. Since the electric rates are
+lowest during the super o ﬀ-peak period, there is a rapid ramping of
+energy demand at midnight across all regions for this rate group.
+4. Conclusion and policy implications
+Results from this study have major implications in energy policy and
+grid operations. Using actual energy meter data, this study captured
+and analyzed the real-world EV charging behavior in the SDGE service
+territory. The analysis reveals three main factors:4.1. EV owners respond to rate plan structure
+There was consistent pattern in the energy pro ﬁles of customers
+under EVTOU plans –EV owners begin charging their vehicles at
+midnight. In all three major regions –City of San Diego, Coastal Climate
+Zone and Inland Climate Zone –there was major ramp in energy load at
+midnight regardless of the time of year and day of the week. The main
+reason for this consistent behavior can be attributed to the incentives
+set by the TOU rate structure. The most economical electric rate during
+the “super o ﬀ-peak ”period starts at midnight in all of the EVTOU plans.
+There is a rapid ramping to a peak load at midnight that decreasesquickly in subsequent hours. This ﬁnding suggests contradictory evi-
+dence to the CEC's forecasted residential EV charging loads (see Fig. 1).
+One of the key factors that may be attributed to the ﬁnding is the fact
+that most EV owners can use smartphone applications ( “apps ”) to easily
+Fig. 7. Average hourly load for Coastal and Inland Zone DR/DRLI residential rate group (Q1: Jan –Mar, Q2: Apr –Jun, Q3: Jul –Sep, Q4: Oct –Dec).
+Fig. 8. City of San Diego average hourly load for the TOU residential rate group. (Q1: Jan –Mar, Q2: Apr –Jun, Q3: Jul –Sep, Q4: Oct –Dec).J.D. Kim Energy Policy 129 (2019) 610–618
+615control when the charging to commence. Therefore, EV owners are
+simply taking advantage of the super o ﬀ-peak rates by setting the
+charging time using smartphone apps.
+4.2. EV charging creates new peaks
+The load pro ﬁle of the EVTOU groups provides a good proxy mea-
+sure of the potential EV charging loads because it represents the actual
+energy usage of residences with EV charging loads. Survey results of EV
+owners between years 2013 and 2015 showed that roughly 73% of EV
+owners were under some type special EV electric rate plan ( CSE, 2018 ).
+It is highly likely that this percentage is even higher in future years dueto greater awareness and availability of EVTOU plans. In all regions, EVcharging loads creates “twin peak loads ”in the load pro ﬁle. The ﬁrst
+peak coincides with the DR/DRLI rate group's peak load, which isapproximately between 6 and 8 p.m. This peak demand is also con-sistent with the region's overall load pro ﬁle (see Fig. 3). The second
+peak demand occurs at midnight when the super o ﬀ-peak period begins
+for the EVTOU group. Therefore, the second peak demand is directly
+attributed to EV charging and the structure of the TOU rate plan. The
+results suggest that residential EV charging loads will create new peak
+demand rather than simply exacerbate the existing peak demand during
+evening hours (approximately 6– 8 p.m.).
+4.3. Rate structure has major impacts
+Results reveal the importance of TOU rate structure design. In the
+standard TOU load pro ﬁles, there is a single peak load during evening
+hours across all regions similar to the region's non-TOU load pro ﬁle
+(e.g., DR/DRLI). In the EVTOU load pro ﬁles, however, there are twin
+Fig. 9. Average hourly load for Coastal and Inland Zone TOU residential rate group (Q1: Jan –Mar, Q2: Apr –Jun, Q3: Jul –Sep, Q4: Oct –Dec).
+Fig. 10. City of San Diego average hourly load for the EVTOU residential rate group (Q1: Jan –Mar, Q2: Apr –Jun, Q3: Jul –Sep, Q4: Oct –Dec).J.D. Kim Energy Policy 129 (2019) 610–618
+616peak loads with one of the peaks occurring at midnight when the super
+oﬀ-peak period begins. The load also decreases rapidly from midnight
+to a leveled minimum load within a couple of hours. The explicit choiceof midnight as the time when the super o ﬀ-peak period begins has a
+direct impact on the occurrence of the second peak demand. Since mostEV chargers are controlled easily using a smartphone app, it is highly
+plausible that EV owners would simply shift the charging activity to the
+changes in the TOU rate structure. For example, if SDGE were to change
+its super o ﬀ-peak period start time from midnight to 2 a.m., then the
+demand peak would simply shift as well to 2 a.m. Therefore, carefulconsideration of the TOU rate design is critical to shaping the load
+proﬁle as more EVs are adopted and charged at homes. Poor TOU rate
+structure design would lead to unintended consequences such as newpeak demand and rapid ramping requirements.
+4.3.1. Limitations
+This study's scope is limited to residential EV charging in a parti-
+cular region (i.e., SDGE service territory) so the results may not ne-
+cessarily be applicable to all other geographical regions. The EV tech-
+nology also is still in its early adoption stages so the behavior captured
+in the analysis may be only re ﬂective of early adopters and not ne-
+cessarily represent the majority/late-adopters of the technology. Thecurrent EV population may be prone to self-selection bias in the TOU
+plans chosen so there is uncertainty in the generalization of the results
+to a future, larger EV driver population. Furthermore, the charging
+loads are strongly correlated to driving intensity and patterns so the
+results may not be applicable to a region with signi ﬁcantly di ﬀerent
+driving patterns.
+4.3.2. Future research work
+Results from this study clearly show the importance of TOU ratestructure design with respect to EV charging loads. Poor design of the
+rate structure can lead to the rise of new energy peaks and other un-
+intended consequences. The necessary next research step is the mod-
+eling and simulation of the EV charging loads as a function of di ﬀerent
+TOU rate structure design and technology adoption rate. For example,the SDGE service territory is expected to experience a signi ﬁcant
+growth of EVs over the next decade. As more EV drivers are on the road,there will be greater energy demand at the residential sector. An ana-
+lysis on the potential energy load pro ﬁles based on di ﬀerent TOU rate
+structures across regions and EV charging load requirements would giveinsights on how to best design the rate structure to induce the best
+charging behavior for better grid operations.
+Acknowledgements
+The author would like to thank the California Public Utilities
+Commission (CPUC) and San Diego Gas & Electric (SDGE) for granting
+access to the meter-level energy data. The author would also like to
+thank the reviewers for their thoughtful comments.
+References
+Axsen, J., Kurani, K., McCarthy, R., Yang, C., 2011. Plug-in hybrid vehicle GHG impacts in
+California: integrating consumer-informed recharge proﬁ les with an electricity-dis-
+patch model. Energy Policy 39, 1617 –1629 .
+CAISO, 2016. Fast Facts: what the Duck Curve Tells Us about Managing a Green Grid.
+California ISO Retrieved from. https://www.caiso.com/Documents/
+FlexibleResourcesHelpRenewables_FastFacts.pdf , Accessed date: 7 November 2018.
+CARB, 2018. Action Plan to Put 1.5 Million Zero Emission Vehicles on California Roads.
+California Air Resources Board Retrieved from. https://www.arb.ca.gov/newsrel/
+2013/zev.htm , Accessed date: 7 November 2018.
+CEC, 2018a. Electricity Consumption by Planning Area. Retrieved from. http://www.
+ecdms.energy.ca.gov/elecbyplan.aspx , Accessed date: 7 November 2018.
+CEC, 2018b. California Plug-In Electric Vehicle Infrastructure Projects: 2017-2025.
+Fig. 11. Average hourly load for Coastal and Inland Zone EVTOU residential rate group (Q1: Jan –Mar, Q2: Apr –Jun, Q3: Jul –Sep, Q4: Oct –Dec).J.D. Kim Energy Policy 129 (2019) 610–618
+617California Energy Commission Report: CEC-600-2018-001. https://www.nrel.gov/
+docs/fy18osti/70893.pdf .
+CSE, 2018. California Air Resources Board Clean Vehicle Rebate Project, EV Consumer
+Survey Dashboard. Center for Sustainable Energy. Retrieved from http://
+cleanvehiclerebate.org/survey-dashboard/ev , Accessed date: 13 February 2019.
+DOE, 2010. The Recovery Act: Transforming America's Transportation Sector. United
+States Department of Energy. http://www.whitehouse.gov/ ﬁles/documents/Battery-
+and-Electric-Vehicle-Report-FINAL.pdf .
+EPRI, 2007. Environmental Assessment of Plug-In Hybrid Electric Vehicles, vol. 1
+Nationwide Greenhouse Gas Emissions. Energy Power Research Institute, Palo Alto,
+CA (M. Duvall and E. Knipping) .
+Kang, J., Recker, W., 2009. An activity-based assessment of the potential impacts of plug-
+in hybrid electric vehicles on energy and emissions using 1-day travel data.Transport. Res. Part D 14, 541 –556.
+Kelly, J., MacDonald, J., Keoleian, G., 2012. Time-dependent plug-in hybrid electric ve-
+hicle charging based on national driving patterns and demographics. Appl. Energy
+94, 395 –405.
+Kim, J., Rahimi, M., 2014. Future energy loads for a large-scale adoption of electric ve-
+hicles in the city of Los Angeles: impacts on greenhouse gas (GHG) emissions. EnergyPolicy 73, 620 –630.
+Kintner-Meyer, M., Schneider, K., Pratt, R., 2007. Impacts Assessment of Plug-In Hybrid
+Vehicles on Electric Utilities and Regional U.S. Power Grids Part I: Technical
+Analysis. Paci ﬁc Northwest National Laboratory .
+MIT, 2010. Electri ﬁcation of the transportation system. In: An MIT Energy Initiative
+Symposium, Cambridge, Massachusetts, . https://mitei.mit.edu/system/ ﬁles/electriﬁ cation-transportation-system.pdf .
+NRC, 2013. Transitions to Alternative Vehicles and Fuels. National Research Council of
+the National Academies. https://www.eenews.net/assets/2013/03/18/document_
+pm_02.pdf .
+SDGE, 2018a. About Us. Retrieved from. https://webarchive.sdge.com/our-company/
+about-us/our-service-territory , Accessed date: 7 November 2018.
+SDGE, 2018b. Area Maps. Electric Tari ﬀBook, Current and E ﬀective Tari ﬀs. Retrieved
+from. https://www.sdge.com/rates-and-regulations/current-and-e ﬀective-tari ﬀs,
+Accessed date: 7 November 2018.
+SDGE, 2018c. When You Use Energy Matters. Retrieved from. https://www.sdge.com/
+whenmatters , Accessed date: 7 November 2018.
+Slezak, L., 2013. Transportation electriﬁ cation US DOE activities. In: Presentation at
+Lehigh University on September 6, Bethlehem, Pennsylvania. United StatesDepartment of Energy. http://www.lehigh.edu/engineering/news/events/ine/pdf/
+Slezak.pdf .
+Sioshani, R., Denholm, P., 2009. Emissions impacts and bene ﬁts of plug-in hybrid electric
+vehicles and vehicle-to-grid services. Environ. Sci. Technol. 43, 1199 –1204 .
+Stephan, C., Sullivan, J., 2008. Environmental and energy implications of plug-in hybrid-
+electric vehicles. Environ. Sci. Technol. 42, 1185 –1190 .
+Wang,
+D., Gao, J., Li, P., Wang, B., Zhang, C., Axena, S., 2017. Modeling of plug-in
+electric vehicle travel patterns and charging loads based on travel chain generation.
+J. Power Sources 359, 468 –479.
+Weiller, C., 2011. Plug-in hybrid electric vehicle impacts on hourly electricity demand in
+the United States. Energy Policy 39, 3766 –3778 .J.D. Kim Energy Policy 129 (2019) 610–618
+618

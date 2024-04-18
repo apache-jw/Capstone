@@ -1,0 +1,1057 @@
+Contents lists available at ScienceDirect
+Applied Energy
+journal homepage: www.elsevier.com/locate/apenergy
+Ensemble machine learning-based algorithm for electric vehicle user
+behavior prediction☆,☆☆
+Yu-Wei Chung⁎, Behnam Khaki, Tianyi Li, Chicheng Chu, Rajit Gadh
+Smart Grid Energy Research Center (SMERC), University of California, Los Angeles, USA
+HIGHLIGHTS
+•Real electric vehicle charging data
+from 252 users were analyzed.
+•Defining the data entropy/sparsity
+ratio (R) as an indicator for predicting
+algorithm selection.
+•Exploiting the benefit of using diffu-
+sion-based kernel density estimator
+(DKDE) for prediction with high R
+data.
+•Reducing at least 10% of predictionerror compared to a single predicting
+algorithm.GRAPHICAL ABSTRACT
+ARTICLE INFO
+Keywords:
+Data entropyData sparsity
+EV user behavior prediction
+Kernel density estimator
+Machcine learningABSTRACT
+This research investigates electric vehicle (EV) charging behavior and aims to find the best method for its
+prediction in order to optimize the EV charging schedule. This paper discusses several commonly used machine
+learning algorithms to predict charging behavior, including stay duration and energy consumption based on
+historical charging records. It is noted that prediction error increases along with the rise of data entropy or thedecreaseofdatasparsity.Thus,thispaperaccountsforbothindicatorsbydefiningtheentropy/sparsityratio(R).
+When R islow, support vector regression (SVR) andrandomforest (RF) regression show betteraccuracy for stay
+duration and energy consumption predictions, respectively. While R is high, a diffusion-based kernel densityestimator (DKDE) performs better for both predictions. The three methods are assembled as the proposed
+EnsemblePredictingAlgorithm(EPA)toimprovepredictingperformancebydecreasing11
+%
+ofthedurationand
+22
+%of the energy consumption prediction errors. The prediction results are then applied to an optimal EV
+charging scheduling algorithm to minimize load variance while reducing the EV charging cost. A numerical
+simulation using real charging data is conducted to show the effectiveness of improved predictions and EV load
+management. The results show that the charging scheduling combined with EPA prediction can reduce 27% of
+peak load, 10% of load variation, and 4% cost reduction, compared to uncoordinated charging.
+https://doi.org/10.1016/j.apenergy.2019.113732Received 17 April 2019; Received in revised form 1 August 2019; Accepted 11 August 2019☆This document is a collaborative effort.
+☆☆This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
+⁎Corresponding author at: 44-120 Engr.IV, 420 Westwood Plaza, Los Angeles, CA 90095, USA.
+E-mail addresses: ywchung@ucla.edu (Y.-W. Chung), behnamkhaki@ucla.edu (B. Khaki), tianyi3gli@ucla.edu (T. Li),peterchu@ucla.edu (C. Chu),
+gadh@ucla.edu (R. Gadh).Applied Energy 254 (2019) 113732
+Available online 28 August 2019
+0306-2619/ © 2019 Elsevier Ltd. All rights reserved.
+T1. Introduction
+Electric vehicles(EVs) havereceived moreand moreattention since
+they became an essential part of a smart grid. This is not only because
+they are environmentally friendly but also because they provide an
+economical option to people, considering the high price of dwindling
+fossil fuels. According to InsideEVs’ statistical report for 2018, around
+361thousandEVssoldintheUSwhile2millionintotalworldwide,andthe numbers almost doubled in comparison to that in 2016 [1]. Cur-
+rently, there are over 614 thousand EVs on the road in California [2],
+spurred by the government’s zero-emission vehicle mandate to achieve
+the goal of accommodating 1.5 million EVs by 2025 (California Ex-
+ecutive Order B-16-2012). Therefore, a sharply increasing number of
+EVs on the road is foreseen. However, the increasing number of EVs
+also means that the rise of energy demand and is now becoming a
+challenge to the electricity grid. Based on the EV charging data col-
+lected on the University of California, Los Angeles (UCLA) campus, the
+average energy consumption is about 8 kWh per charge, which is si-
+milar to a daily household energy demand. EV charging load often
+shows two peaks in a day, one in the morning when people plug in the
+EVattheworkplaceandtheotherintheeveningwhenpeoplegethome
+from work. Without proper energy management for EV charging, the
+huge power demanddue toalargenumber of plugged-inEVscanstress
+the distribution grid, degrade the power quality [3,4], and impact the
+wholesale electricity market [5]. The AAA Foundation report reveals
+that US drivers spend only 0.8h in average behind the wheel everyday
+[6]and mostly leave vehicles parked. This implies that EVs can have a
+great flexibility for charging and is it not necessary to start charging
+right after plugged-in. Thus EV charging scheduling plays an important
+role in distributing and allocating the charging time according to the
+EVs’ availability for overall load management. A proper EV load man-
+agement not only mitigates the adverse effects of EV charging but also
+brings benefits to the grid such as load valley filling and peak shaving
+[7]. Also EV as a mobile battery has a potential to participate in elec-
+tricity market [8]. Yet, the stochasticity of EV user charging behaviors,
+including start time, stay duration, and energy demand, poses a sig-
+nificant challenge for the management of charging scheduling. There-
+fore, this paper discusses and compares several commonly used pre-
+dictionmethods,aimingatdevelopinganaccuratepredictingmodelfor
+EVuserbehaviorinordertoimproveenergymanagementperformance.
+In addition, since the predicting methods, such as regression or kernel
+density estimator (KDE) are based on the historical data and the his-
+toricalchargingpatternsmaybeverydifferentfromeachother,thereis
+no one-size-fits-all predicting method for all different EV users. Thus,this paper analyzes and classifies the different charging patterns, and
+uses different predicting algorithms accordingly.
+Forecasting EV load and it’s impact to a distribution grid has re-
+cently been brought to light by the development of smart grids and the
+growing number of EVs. However, due to limited access to real EV
+charging data, synthetic data from travel surveys are used for the ma-
+jority of these studies. Gennaro et al. [9]utilized the data collected
+from conventional fuel vehicles. Harris et al. [10]synthesized EV
+chargingprofilebyusingvehicletripdatafromtheNationalHousehold
+Travel Survey (NHTS). Wang et al. [11]simulated EV energy con-
+sumption using car travel survey. In spite of the early stage of EV
+adoption,someutilitiesandaggregatorshavebeencollectingdatafrom
+charging stations to gain insight into EV user behavior [12,13]. EA
+Technology [14]haveconductedathreeyearprojecttocollectdataand
+investigate the impact of clusters of EVs on the electricity grid in theUK. There are two types of data can be used for the forecasting, which
+are station record and charging record. Station record comes directly
+from the measurement at the charging outlets while charging record
+comes from the measurement of each user’s charging session. In other
+words, station record is the aggregated load data over time and char-
+ging record is the data for a specific user during a charging session. In
+[15], multiple methods including a k-nearest neighbor (KNN), a lazy-
+learning algorithm and a pattern sequence algorithm have been eval-
+uated for aggregated EV load estimation. In [16,17], an autoregressive
+integrated moving average (ARIMA) method has been proposed foraggregated EV load forecasting. In [18], a data mining model was de-
+velopedtopredictEVchargingdemandforageographicalarea.In [19],
+modifiedpattern-basedsequenceforecasting(MPSF)wasincomparison
+with KNN, support vector regression (SVR) and random forest (RF)
+algorithms and showed more accurate performance. Also, the ag-
+gregateddataofEVloadsmaybeusedforcoordinatingtheEVcharging
+operation as in [20]. However, to schedule the charging when EVs are
+plugged in, the charging parameters in each session are preferred in-stead of the aggregated load information. Furthermore, the prediction
+by aggregated load requires a large amount of EV charging data and
+currently the availability of the data is limited. The author in [21]
+discussed EV charging load forecasting by using station records andcharging records, and the results showed that charging record based
+prediction is faster and more accurate. The method such as Gaussian-
+based kernel density estimator (GKDE) has been applied to handle the
+uncertainties of user behaviors for each charging session in [22–24].
+But the use of optimal bandwidth selection for GKDE, a.k.a the normalreference rule [25], usually leads to an oversmoothed probability and
+results in less accurate prediction. To overcome the deficiency of theNomenclature
+uid
+EV user ID
+ts
+start charging time [h]
+td
+EV stay duration [h]
+t^d
+prediction of
+td [h]
+dw
+day of week
+e energy consumption [kWh]
+e
+prediction of e[kWh]
+N number of charging sessions
+P
+prediction value
+T actual value for
+P
+y response variable for regression
+x explanatory variable for regression
+normal vector for SVR
+slack variable in SVR
+Lagrange multiplier in SVR
+h bandwidth of the GKDE
+tdiff
+diffusion time for DKDE
+total number of EVs
+total number of EV chargers
+zj
+energy stored in the
+j th EV [kWh]
+uj
+EV charging power [kW]
+dB
+building load [kW]
+Cj
+the
+j th EV battery capacity [kWh]
+gl
+the
+l th EV charger’s power rating [kW]
+t time index in EV scheduling algorithm [hr]
+H prediction horizon in EV scheduling algorithm
+total netload demand [kW]
+average netload demand [kW]
+time of use price vector [$]
+real Numbers
+space of input data
+natural number
+(·)
+transformation function
+k(·)
+Kernel function in SVR
+K(·)
+Gaussian Kernel function
+P(·)
+probability density functionY.-W. Chung, et al. Applied Energy 254 (2019) 113732
+2normal reference rule, kernal density estimation via diffusion (DKDE)
+[26], which provides a better bandwidth selection approach, has been
+used to improve the prediction accuracy of EV charging behavior
+[27,28]. Byexamining the performance of the algorithmsapplied to EV
+user behavior prediction, it is noted that the variances of the errors are
+usually large. This is because the EV charging patterns vary sig-
+nificantly and there is no unique algorithm that works for all. Ref. [28]
+compares and discusses DKDE and GKDE, and the result shows thatDKDE has a higher accuracy for the users who charge their EVs reg-
+ularlywhile GKDE worksbetter for the irregulars.However,the overall
+performance for the prediction still has room for improvement. To the
+best of the author’s knowledge, there is no effective feature that can
+categorize different EV charging patterns associated with the most ac-
+curate predicting algorithms. Therefore, this paper aims at classifying
+different charging patterns and uses the best approach to predict the
+charging behavior in each classification.
+Therestof the paperisorganized asfollows:Section 2describesthe
+method for EV user behavior prediction and reviews commonly used
+machine learning algorithms. Section 3presents the EV charging
+schedulingframework.Section 4discussestheEVchargingdatasetsand
+data processing. Section 5shows the preliminary results and the pro-
+posed algorithm. Section 6presents and discusses the result. Finally,
+Section7concludes the paper.
+2. User behavior prediction
+This section describes the method for EV user behavior prediction.
+The objective is to predict each specific EV user’s stay duration and
+energy demand based on their historical charging data when they plug
+in their EVs. For each charging session, a 5-tuple of parameters is used
+to describe a charging behavior:
+s u t t d e ( , , , , ),id s d w
+(1)
+where
+uid istheuniqueidentifier(user ID)foreachuserinoursystem;
+ts
+and
+tddenote start time andstay duration,respectively;
+dw denotes day of
+week; and edenotes energy consumption. Those charging parameters are
+of vital of importance for EV charging scheduling algorithms to de-
+termine an optimal solution. To be specific, once a user initiates a
+chargingsession,thepredictionsof stay duration andenergy consumption
+are required for the scheduling services to determine energy allocationschedule. It is noted that stay duration is related to start time andday of
+weeksince users in our model may have their fixed weekly working
+schedules. Therefore, the prediction of stay duration(
+t^d
+) can be ex-
+pressed as follows:
+=t f t d^( , ). d d s w
+(2)
+Also, energy consumption isrelatedto start time, day of week,and stay
+duration, such that:
+=e f t d t ( , ,^).es w d
+(3)
+As shown in (3), when predicting energy consumption, the stay
+durationis unknown and thus rely on its predicted value,
+t^d . To gain
+better prediction accuracy, this paper analyzes several different pre-diction algorithms aiming at finding the best predictors, i.e.
+fd
+and
+fe,
+for each user. The predicting procedure is illustrated in Fig. 1.
+Because the charging pattern varies from each other, there is no
+one-size-fits-all predictor for all EV users. Therefore, in this paper, EVusers charging patterns will be classified, and eight different prediction
+algorithms will be applied to those different classes for comparison to
+find the optimal solution. To evaluate the performances of different
+prediction algorithms, symmetric mean absolute percentage error
+(SMAPE) is chosen here based on the following reasons:
+1. SMAPE is a unit free percentage error and it is easier to present the
+prediction accuracy with different data sets, which are stay durationandenergy consumption in this paper.
+2. Percentage error such as mean absolute percentage error (MAPE,
+defined as MAPE=mean
+y y y( / )
+) has a problem when y value
+becomes very small. This small value will result in a huge error thatbias the overall accuracy. Therefore, SMAPE would be more accu-
+rate since it considers both yand
+y
+in the denominator, given that
+the data is strictly positive.
+3. SMAPE is widely used in evaluating EV charging prediction accu-
+racy, it would be easier for comparison.
+For charging session i, the SMAPE is defined as:
+=
++=SMAPE iNP i T i
+P i T i( )1 ( ) ( )
+( ) ( ),
+iN
+1
+(4)
+where Nisthenumberofchargingsessions,
+P istheprediction,and Tis
+the corresponding true value.
+2.1. Machine learning algorithms
+Eight prediction algorithms are reviewed here in the following sub-
+sections. By examining the EV charging data, the data can be roughly
+classified into four categories: linear, non-linear, clustered, and scat-
+teredpatterns.Multiplelinearregressionissuitableforalinearpattern.
+SVRcanpredictbothlinearandnon-linearpatternsandisnotbiasedby
+outliers. Decision tree (DT), random forest (RF) regression are appro-
+priate forclusteredpatterns.RF canbe moreaccuratethanDT sinceDT
+may easily leadto over-fitting. However, it is requiredto determine the
+propernumber of treesfor RF.KNN regressioncan alsobeapplied for a
+clusteredpattern.Scatteredpatternischallengingforprediction.Inthis
+case, GKDE and DKDE are used to find the probability density function
+and make a prediction by calculating the expected value. A statistical
+methodisappliedhereforcomparison.Thesealgorithmsarecompared,
+and their effectivenesses are evaluated for different EV charging pat-
+terns.
+2.1.1. Statistical method
+Statistical method such as historical average are referred to as a
+naive approach, and it is a simple algorithms that used only for com-
+parisonwiththeotherforecastingtechniques.Forthehistoricalaverage
+algorithm, the prediction is the average of the past data.
+2.1.2. Multiple Linear Regression (MLR)
+MLR is used to describe the mathematical relationship between
+severalexplanatoryvariablesandaresponsevariable,andthegoalisto
+make predictions about the response variable based on the known ex-
+planatory variables according to this relationship. For example, to
+predict a stay duration based on the start time andday of week. The
+model of MLR with kexplanatory variables and nobservations is as
+follows:
+= + + …+ + = …y b b x b x b x e for i n 1, 2, ,i i i k ik i 0 1 1 2 2
+(5)
+where
+yiistheresponsevariable,
+b0 isthey-interceptterm,
+… b b b[ , , , ] k 1 2
+are the regression coefficients,
+… x x x[ , , , ]i i ik1 2 are explanatory variables
+and is the error term, which is also known as residual that is used to
+Fig. 1.User behavior prediction.Y.-W. Chung, et al. Applied Energy 254 (2019) 113732
+3account for the difference between the actual outcome and the pre-
+diction.Inthispaper,for stay duration prediction,
+xi1 isstart time and
+xi2
+isday of week (
+=k 2). For energy consumption,
+xi1 isstart time,
+xi2 isday
+of week,and
+xi3 isstay duration(
+=k 3 ). Here we use the Python package
+(sklearn.linear_model.LinearRegression) [29]for the MLR model.
+2.1.3. Support Vector Regression (SVR)
+SVR is a type of support vector machine that supports linear and
+non-linear regression. Unlike general linear regression methods, whichtry to minimize the error between the prediction and data, SVR makes
+sure the errors do not exceed the threshold. Specifically, in
+-SVR[30],
+the goal is to find a function
+y x( ) that has at most
+ deviation from the
+obtainedtargets
+yi forthetrainingdata,ignoringtheoutliersthatlocate
+outside of the
+ -tolerence band. Consider a training dataset
+… x y x y{( , ), , ( , )} n n 1 1
+, where
+ denotes the space of the input data,
+SVR can be expressed as follows:
+= + y x x b with b ( ) , , ,
+(6)
+where
+ an b are the solutions of the following optimization problem:
++ +
++
++ +=
+y x b
+x b ymin
+subject to,
+,
+, 0.w bin
+i i
+i i i
+i i i
+ii, ,1
+22
+1
+(7)
+InEq.(7),slackvariables
+,ii areintroducedtohandletheproblem
+of infeasible
+ -precision constraints. The constant
+>0 controls the
+trade-off between the flateness of
+y x( ) (which is
+2 ) and the number
+of training data points that deviate larger than
+ is tolerated. This op-
+timization problem can be solved by Lagrange multipliers method and
+the solution is given by
+= = +
+= =x and f x k x x b ( ) ( ) , ,
+in
+i i i
+in
+i i i
+1 1
+(8)
+where
+,i i areLagrangemultipliersinwhich
+C x , [0, ], ( ) i i i isa
+transformation function, and
+= k x x x x( , ): ( ), ( ) i i is a kernel func-
+tion. The kernel function transforms the data into a higher dimensionalfeature space to make it possible to perform the linear regression. The
+Gaussion radial basis function (RBF) is used here as a kernel function:
+= k x x e( , ) , ix x
+2i2
+2
+(9)
+where
+ isthe kernelparameter.ThedetailoftheSVRformulation
+can be found in [31]. In this paper, we use the Python package
+(sklearn.svm.svr) [29]for the SVR model.
+2.1.4. Decision tree (DT) regression
+Decision tree (DT) regression is a regression model in the form of a
+tree structure that breaks down a dataset into smaller classified subsets
+usingeachoftheindependentvariables’splitpoints.Theaverageofthe
+classified subset is the prediction value for the target with respect to its
+corresponding independent variable values. The classified subsets are
+called leaf nodes whereas the split points are decision nodes. For each
+decision node, mean square error (MSE) are compared across the in-
+dependentvariablesandthevariable/pointrenderingthelowestMSEis
+chosen as the root node/decision node. The process is recursively
+continued until the optimal split of the data is achieved, which is de-
+fined in terms of tree size constraints within the Python package
+(sklearn.tree.DecisionTreeRegressor) [29]used in this paper.
+2.1.5. Random Forest (RF) Regression
+Random forest (RF) regression is an ensemble learning method that
+combines and averages decisions from a sequence of DT models.Formally, RF regression can be expressed as follows:
+=
+=g xNf x ( )1( ),
+treeiN
+i
+1tree(10)
+where
+g x( ) is the RF model,
+f x( )i is the
+ith DT model, and
+Ntree is the
+number of decision trees. Each
+f x( )i is built from a sample drawn with
+replacement from the training dataset. By using the average of the
+multiple DT models on the corresponding sub-samples of the dataset,
+the predictive accuracy can be improved.
+Here we use the Python package
+(sklearn.ensemble.RandomForestRegressor) [29]for the RF model.
+2.1.6. K-Nearest Neighbor (KNN) Regression
+K-Nearest Neighbor (KNN) is a non-parametric method used for
+classification and regression [32]. The regression model is used since
+the data labels are continuous instead of discrete variables. The model
+implements learning based on the k-nearest neighbors of each query
+point, where
+=k 4 is specified in this paper. The prediction of a query
+pointistheaverageofitsnearestneighbors,anditisassumedthateachneighbor contributes uniformly to the classification of the query point.
+Here we use the Python package (sklearn.
+neighbors.KNeighborsRegressor) [29]for the KNN model.
+2.1.7. Kernel Density Estimator (KDE)
+Kernel density estimator (KDE) is an nonparametric estimation
+method that does not require explicit parametric model to fit the data.Different from the above-mentioned regression methods, a bi-variate
+KDE makes use of the joint probability distribution of start time vs.stay
+durationandstay duration vs.energy consumption to predict stay duration
+andenergy consumption, respectively. To estimate a random variable
+X i e, .
+.
+x, given a joint probability function
+p x y( , ) , the expected value
+is calculated:
+= = = x E X x p x dx x p x y dy dx [ ] · ( ) · , · .
+X X Y
+(11)
+For example, to predict stay duration d for a specific user, the joint
+distribution of start time
+t( )s vs.stay duration
+t( )d is used and the uni-
+variate distribution for dis calculated by:
+= =+p t p t t dt p t t dt( ) , , , dts d st tt t
+s d s
+s ss
+(12)
+where
+ts isthetoleranceintervalofstart time
+ts andissetto2hinthis
+paper from
+t 1 s to
++t 1 s(
+=t1). The estimated stay duration (
+td) is
+the expected value within this interval. Similarly, the energy demand(
+e
+) is estimated by the distribution of stay duration (
+td) vs. energy con-
+sumption(e) according to the estimated stay duration (
+td) and the toler-
+ance interval (
+td ) so that:
+= =+p e p t e dt p t e dt ( ) , ,
+td dt tt t
+d d
+d dd
+(13)
+In this paper,
+=t 2 d where
+=t1 .
+Gaussion-Based Kernel Density Estimator(GKDE) Given an ob-
+served dataset
+= …X X X X [ , , , ] N 1 2 , the probability density function can
+be estimated as follows [33]:
+=
+=P xNhKx X
+h( )1,
+iN
+i
+GKDE
+1
+(14)
+where Nisthe sizeof
+X h, isthebandwidthoftheGaussiankernel
+K(·)
+which is defined as:
+= K u u ( )1
+2exp1
+2.2
+(15)
+Bandwidth hdefines the shape of the kernel function, thus it is a
+deterministic factor to the performance of the estimator. A large h
+oversmoothes the density function that masks the structure of dataY.-W. Chung, et al. Applied Energy 254 (2019) 113732
+4while a small hgenerates a spiky one that makes the interpretation
+difficult. It is desired to find a value of hthat minimizes the error be-
+tween the estimated density andthe actual density. However, there is a
+bias-variance trade-off for the bandwidth selection, which means a
+large bandwidth reduces the variance of
+P x ( ) KDE but increases the bias
+with respect to the actual density. On the other hand, a small band-
+width decreases the bias of
+P x ( ) KDE at the expense of larger variance.
+Silverman’s rule of thumb [25], also known as the normal reference
+rule, provides a simple solution for the optimal bandwidth, with the
+assumption that the actual density has Gaussian normal distribution.
+But,thismethodusuallyleadstoanoversmoothedresultinmultimodal
+models such as EV user charging behaviors.
+Diffusion-Based Kernel Density Estimator(DKDE) Different from
+the normal reference rule, the optimal bandwidth can be derived from
+theobserveddataset Xusinganimprovedplug-inmethodintroducedin
+[26].
+The KDE of (14)can be expressed in an alternative form:
+=
+=P x tNx X t ( ; )1( , ; ), diff
+iN
+i diff KDE
+1
+(16)
+where
+= x X ttx X
+t( , ; )1
+2exp( )
+2, i diff
+diffi
+diff2
+(17)
+in which
+= t hdiff is defined as in (14).
+It is interesting to note that GKDE in (16)is the unique solution to
+the Fourier heat equation as follows [26]:
+= >tP x txP x t x t ( ; )1
+2( ; ), , 0, , diff diff diff2
+2
+(18)
+with initial condition:
+=
+=P xNx X ( ;0)1( ),
+iN
+i
+1
+(19)
+where
+P x( ;0) represents the empirical density of X, and
+x X( ) i is the
+Dirac measure at
+Xi .
+The Neumann boundary condition is as follows:
+= = = =tP x ttP x t ( ; )| ( ; )| 0. diff x diff x 1 0
+(20)
+Making use of the link between GKDE and Fourier heat equation,
+finding the optimal bandwidth of (16)is equivalent to finding the op-
+timal mixing time
+t of the diffusion process governed by (18).
+Considering all these conditions and the finite domain
+[0, 1] , the
+analytical solution of (18)is obtained by:
+=
+=P x tNx X t x ( ; )1( , ; ) 0, 1 ,diff
+iN
+idiff DKDE
+1
+(21)
+in which the kernel function is given by:
+= + +
+=x X t x k X t x k X t
+for x( , ; ) ( , 2 ; ) ( , 2 ; )
+[0, 1].idiff
+kidiff idiff
+(22)
+3. EV charging scheduling
+3.1. Model description
+The Electric Vehicle Charging Infrastructure (EVCI) is controlled
+and managed by a control entity (CE). The purpose of CE is twofold:
+minimizing the peak load, which is equivalent to load variance mini-
+mization, as well as reducing total charging cost [34]. The EVCI is
+suppliedbyan electricalfeedershared withan officebuilding whichits
+average net load demand is 318kW.Let’s denote the total number of EVs and EV chargers (EVCs) by
+and
+, respectively, where
+, . In this paper, each EVC has
+four charging outlets and can charge four EVs at the same time, so we
+use
+lto show the set of EVs supplied by
+EVC l . The model of EVCI and
+the building can be written as:
++ = + = … z t z t T u t j( 1) ( ) ( ), 1, , ;j j h j
+(23a)
+= +
+=e t d t u t( ) ( ) ( ), CIB B
+jj
+1
+(23b)
+where
+z t u t e t d t ( ) , ( ), ( ), ( )j j j CIB B and
+t .
+z t( )jin [kWh]
+is the energy stored in
+EV e t, ( )j CIB in [kW] is the total net load demand
+of the EVCI and the building.
+d t( )B in [kW] is the load demand of the
+building. In (23a),
+Th (in hours [h]) is the discretization in time, e.g.
+=T 0.5 h
+corresponds to 30min in this paper.
+u t( )j , which is the EV
+charging power, is introduced as the optimization variable.
+u t( )j is
+positive in the charging mode and it is negative in discharging mode,
+a.k.a vehicle to grid (V2G) function. However, V2G is not discussed in
+this paper.
+The constraints on the energy capacity of EVs are:
+= … C t z t C t j( ) ( ) ( ), 1, , ,j j j
+(24)
+where
+C t( )j and
+C t( )j are the bounds on the energy stored in EVs. The
+constraintsonchargingpowerofEVsandtheircorrespondingEVCsare:
+= … u u t u j ( ) , 1, , ; j j j
+(25a)
+= …
+=g t u t g t l( ) ( ) ( ), 1, , ,l
+ll l
+1l
+(25b)
+where
+uj and
+ujare the minimum and maximum power ratings of the
+EV charging outlet, and
+gl and
+glare the minimum and maximum
+power ratings of the EVCs.
+The bounds in (24)for EVs are time-varying and defined as follows;
+if
+= … EV j, 1, ,j is:
+•not plugged in EVC,
+= = C t C t( ) ( ) 0j j
+•plugged in EVC, but it is in idle mode,
+= = C t C t C( ) 0 & ( )j j j
+•plugged in EVC, and it is needed by time
+= = t C t C t C, ( ) ( )j j j
+where
+Cj is the maximum capacity of
+EV j ’s battery.
+3.2. Problem formulation
+For the given time index tand prediction horizon
+H , let’s denote
+the vector notation
+= + … + u t u t u t H u u ( ( ), ( 1), , ( 1)) , j j j jTj
+t( )H ,
+which is used for all other variables as well. To formulate the objective
+function, we define total net load demand at time tby(26):
+d.B
+(26)
+Also, the average net load demand at time tover time horizon
+H
+is:
+=+
+H1.
+t kk H 1
+(27)
+Accordingly, the twofold objective function of EV coordinated
+charging (CC) is written as:
+= + +
+= =V u u : min ( )
+s. t. (23)–(25),jTj
+jj
+u1 12
+(28)
+where
+ is a weighting factor, and
+H is time of use (TOU) price
+vector[35]. The first part in (28)reduces charging cost, while the
+second part minimizes the total load variance.Y.-W. Chung, et al. Applied Energy 254 (2019) 113732
+54. Data preparation
+4.1. Data
+Two sources of EV charging data were applied to this research, in-
+cluding SMERC charging stations on the UCLA campus [12]as working
+spaceandrealresidentialEVusers’dataintheUKthatisavailablefrom
+theEAtechnologywebsite [14].ThedatausedfromtheUCLAcharging
+stations was recorded from October 1, 2015 to December 31, 2017 and
+the data from the EV technology between February 16, 2014 and No-
+vember 29, 2015. However, not every user in those datasets has a
+charging history that is long enough for data analysis and prediction.
+Therefore, we selected 50 users’ data from UCLA and 202 form EV
+technology, which have at least 100 charging records, with 39,458
+recordsintotal.Thedatawassplitinto70
+% forthetrainingset,20
+% for
+the validation set, and 10
+% for the test set.
+The statistics for charging start time, stay duration, and energy con-
+sumption are shown in the figures below. Fig. 2shows two peaks for EV
+charging start time:oneat7:30inthemorningandthe otherat17:30in
+the evening. The average stay duration is 3h, and the average energy
+consumption is 10.63 kWh, as shown in Figs. 3and4, respectively.
+4.2. Data preprocessing
+Thecharging start time andstay duration wereconvertedtohour.For
+instance, 13:15 will be noted as 13.25h. If a stay duration was smaller
+than 0.5h or an energy consumption was smaller than 1 kWh, the entire
+5-tuple parameter for that charging session was removed from the da-
+taset. Also, if an energy consumption was mistakenly recorded as more
+than the physical maximum of the charging device, the record valuewasreplacedbythemaximumvalueofitshistorical energy consumption.
+4.3. Data entropy
+Joint entropy is used here to characterize the uncertainty of a set of
+variables. Two kinds of datasets were analyzed, which are start time vs.
+durationdata and durationvs.energy consumption data. For calculation,
+start time anddurationare rounded to the closest half hour, and the
+energy consumption is rounded to the closest integer. The values of start
+timeanddurationarethenmappedintoasetofintegers
+[0, 47]
+,which
+represents
+[0: 00, 23: 30] .The formulation of a joint entropy is as fol-
+lows:
+= E X Y P x y log P x y , , , ,
+x y2
+(29)
+where xandyare the two variables in dataset XandY, respectively;
+P x y( , )
+is the joint probability of the two variables.4.4. Data sparsity
+Sparsityisdefinedasthenumberofzeroentriesdividedbythetotal
+numberofentries.Intuitively,ifasparsityishighthedataislessvariantbecause most entries are repeated. On the other hand, for low sparsity,
+the data is more scattered. As was the data entropy discussed in the
+previous section, start time vs.duration data and duration vs.energy
+consumption data are analyzed. The values of start time, duration, and
+energy consumption are rounded. Following are the examples of sparsity
+calculation:In Fig.5,thenumbersinthecellsarethenumbercountsfor
+thedatapoints.For start time vs.duration,the start time rangesfrom0to
+23 while the durationfrom 0 to 9. The number of non-zero entries is 31
+and the total eneries is 240, thus the sparsity is (240–31)/240 =0.87.
+In the same manner, the sparsity for durationvs.energy consumptuon is
+0.89.
+5. Preliminary results and proposed algorithm
+5.1. Preliminary results
+Figs. 6and7show the comparisons of eight algorithms’ prediction
+errors with regard to data entropy, data sparsity and the ratio of en-
+tropy/sparsity (R). Generally, SMAPE positively correlates to data en-
+tropy and negatively correlates to data sparsity. Therefore, this paper
+takesintoaccountbothoftheeffectsofentropyandsparsitybydefining
+theratio:
+=R entropy
+/sparsity.SDandDErepresentthedatasetsof Start
+timevs.Duration and Duration vs.Energy Consumption, respectively.
+DatasetSDisusedtopredict stay duration whileDEisutilizedtopredict
+energy consumption. Ratios of R_SD and R_DE are calculated using thetraining datasets’ data entropy and sparsity.
+is the correlation coef-
+ficient of SMAPE and R. P-value indicates the statistical significance ofthe trend (significant if P-value
+<
+0.05).
+Fig. 2.Statistics of EV charging start time.
+ Fig. 3.Statistics of EV stay duration.
+Fig. 4.Statistics of EV energy consumption per charge.Y.-W. Chung, et al. Applied Energy 254 (2019) 113732
+6The SMAPEs of MLR, SVR, DT, RF, and KNN are compared with
+DKDE as shown in Figs. 8 and 9. Fig. 8compares the SMAPEs of
+duration, and it shows that when R_SD is larger than 5.5, DKDE per-
+forms better. Likewise, Fig. 9compares the SMAPEs of energy con-
+sumption predictions, and it shows that DKDE performs better when
+R_DE is larger than 4.
+Table 1shows the durationprediction results of the different algo-
+rithms. It indicates that SVR is most accurate overall, especially when
+R_SD
+5.5. DKDE is the best when R_SD
+> 5.5 and the SMAPE does not
+change significantly in different R_SD categories.
+Table 2shows the energy consumption prediction results of the dif-
+ferent algorithms. RF is shown to be the most accurate overall, espe-cially when R_DE
+4. Similarly, DKDE performs the best when R_DE
+>
+4.
+5.2. Proposed algorithm
+Based on the preliminary results, the combination of SVR, RF, and
+DKDE isproposedtoformanensemblealgorithm,namelythe EPA.The
+algorithm is depicted in Fig. 10below.
+Data entropyand sparsity are analyzed for all registered EV usersin
+the system in order to calculate the R value. When an EV is plugged in,theuser’sR_SDisretrievedtodetermineeitherSVRor DKDEtobeused
+for predicting stay duration. The predicted stay duration is then sent to
+thenextstepfor energy consumption prediction.Similarly,RForDKDEis
+applied depending on the value of R_DE. The threshold of R to switch
+the algorithms may need to update quarterly since user behaviors may
+change over time. The EPA is evaluated using a 10
+% test dataset. The
+prediction results along with the EV scheduling results are presented in
+the next section.
+6. Results and discussion
+Figs. 11and12show the SMAPE with regard to R for durationand
+energy consumption predictions, respectively. Fig. 11illustrates the
+comparison between SVR and DKDE. As shown in the figure, the
+SMAPE of SVR is smaller when R_SD is smaller than 5.5, whereas the
+SMAPE of DKDE is smaller when R_SD is larger than 5.5. Fig. 12de-
+monstrates the comparison between RF and DKDE. As expected, RF is
+more accurate when R_DE is smaller than 4, while DKDE performs
+better when R_DE is larger than 4.
+Table 3shows the average andstandard deviation for the SMAPEof
+durationandenergy consumption predictions. A pairwise T-test with the
+null hypothesis that the EPA has the same performance as the other
+Fig. 5.Sparsity of EV charging patterns. left:start time vs.duration,right:duration vs.energy consumption.
+Fig. 6.Comparisons of SMAPE(
+% ) versus entropy, sparsity and R_SD (entropy/sparsity).Y.-W. Chung, et al. Applied Energy 254 (2019) 113732
+7algorithmsisrejectedbythesmallP-values(p
+< 0.05).Theresultsshow
+that EPA has decreased the errors significantly for durationandenergy
+consumption predictions by around 11% and 22%, respectively.
+Root mean squared error (RMSE) is also evaluated to show the ef-
+fectiveness of EPA. Since each user has different number of charging
+records, here we calculate the mean of RMSE of all users, called mean
+estimation deviation (MED). MED is defined as follows:
+=
+= =MEDN NP j T j1 1( ( ) ( )) ,
+useriN
+ijN
+1 12user i
+(30)
+where
+Nuser isthenumberofusers,
+Ni isthenumberofchargingsessions
+for the i-th user,
+P is the prediction, and Tis the corresponding truevalue.Table 4shows the comparison of MED among SVR, DKDE, RF,
+andEPA.ForEPA,thepredictionMEDfor stay duration is1.16handfor
+energy consumption is 2.52 kWh.
+Using EPA prediction results, we run CC for the EVCI including 252
+EVs and 63 EVCs. TOU used in our numerical simulation is shown in
+Fig. 13. Total charging profiles of the EVCI for uncoordinated charging
+(uCC) and CC using real and prediction data are shown in Fig. 14. As it
+is clear, CC flattens the total load profile which results in peak load
+shaving when TOU price is high and valley filling when TOU price is
+low.Also,thedifferencebetweenloadprofileusingEPAandrealdatais
+negligible during most of the time intervals. However, there appears a
+valleyduring 23:00 and4:00in Fig. 14andisnotfilled. This isbecause
+of less availability of EVs according to our dataset, in which the “end
+Fig. 7.Comparisons of SMAPE(
+% ) versus entropy, sparsity and R_DE (entropy/sparsity).
+Fig. 8.Comparisons of different algorithms with DKDE for duration prediction.Y.-W. Chung, et al. Applied Energy 254 (2019) 113732
+8time” refers to the “end charging time” instead of “un-plugging time,”
+and therefore further restrains the EVs’ time flexibility for charging.
+The coordinated and uncoordinated EV charging scheduling results
+with respect to peak-to-peak (PTP) and root-mean-square (RMS) of the
+load profile, and charging cost are shown in Table 5. The result of
+CC_EPAalignswellwithCC_Real,andreduces27%peakload,10%loadvariation, and 4% charging cost from that of uCC’s.Although the result shows only $10 can be saved per day by sche-
+duling 252 EVs’ charging comparing to uncoordinated charging, with alarge number of EVs, the saving can be significant. Furthermore, ac-
+cording to [36], the energy unit cost (EUC) negatively related to a load
+factor(LF) alongwithahyperbolicfunction(
+EUC LF 1/
+),whereLFis
+defined as follows:
+Fig. 9.Comparisons of different algorithms with DKDE for energy consumption prediction.
+Table 1
+Average and Standard deviation (in parentheses) for the SMAPE(
+% ) ofdurationprediction.
+Ratio (R_SD) SVR MLR DT RF DKDE GKDE KNN AVE
+R_SD
+5.5 (n=187) 9.54 (4.66) 10.19 (5.91) 11.84 (5.62) 10.21 (5.32) 10.96 (6.37) 17.39 (14.32) 12.65 (6.26) 18.43 (7.78)
+R_SD
+>5.5 (n=65) 13.40 (4.40) 13.51 (4.20) 16.66 (4.78) 14.15 (4.33) 11.81 (4.15) 14.90 (5.84) 16.82(4.95) 23.47 (7.61)
+Overall (n=252) 10.54 (4.89) 11.05 (5.69) 13.09 (5.80) 11.23 (5.36) 11.18 (5.88) 16.75 (12.72) 13.73(6.21) 19.73 (8.03)
+Table 2Average and Standard deviation (in parentheses) for the SMAPE(
+%
+) ofenergy consumption prediction.
+Ratio (R_DE) SVR MLR DT RF DKDE GKDE KNN AVE
+R_DE
+4 (n=204) 9.06 (4.25) 8.71 (4.14) 9.16 (4.55) 7.96 (3.68) 8.31 (4.20) 10.33 (4.23) 11.80 (5.38) 16.10 (4.64)
+R_DE
+>4 (n=48) 12.91(4.11) 12.69 (4.32) 13.68 (5.52) 11.59 (4.04) 10.54 (3.76) 12.68 (4.80) 15.70 (5.54) 17.86 (3.21)
+Overall (n=252) 9.79 (4.48) 9.46 (4.45) 10.01 (5.05) 8.65 (4.00) 8.73 (4.21) 10.78 (4.43) 12.54 (5.61) 16.43 (4.45)
+Fig. 10.Flowchart of the ensemble predicting algorithm.Y.-W. Chung, et al. Applied Energy 254 (2019) 113732
+9=LFAveragePower
+PeakPower*100%.(31)
+The pricewill approach the minimum when LFclose to 1.As shown
+inFig. 2,people tend to plug in EVsin the morning when they arrive at
+work, and in the evening when they get home. If the energy peak
+produced byEVchargingthatdrasticallylower the LF,the energypricewill increase sharply. Therefore, EV charging control is necessary to
+accommodate such larger amount of EVs within the electricity grid.
+The results show that the EPA model fits the true densities, in-
+cluding start time, stay duration, and energy consumption, better than
+theotheralgorithms.Therefore,thecontrolentity(CE)canscheduleEV
+charging optimally in terms of minimizing peak loads and reducing
+Fig. 11.Average SMAPE vs. R_SD for SVR and DKDE.
+Fig. 12.Average SMAPE vs. R_DE for RF and DKDE.
+Table 3
+SMAPE(
+% ), standard deviation (in parentheses), and the pairwise T-test result.
+Duration prediction Energy consumption prediction
+Algorithm SVR DKDE EPA RF DKDE EPA
+SMAPE (%) 11.53 (5.18) 11.67 (6.36) 10.40 (5.80) 9.69 (4.60) 9.56 (4.26) 7.54 (4.24)
+P-value 0.00964409 0.00833339 - 0.00182736
+× 2.00649 1005 –
+Table 4MED (Duration: hour; Energy: kWh), standard deviation (in parentheses), and the pairwise T-test result.
+Duration prediction Energy consumption prediction
+Algorithm SVR DKDE EPA RF DKDE EPA
+MED 1.36 (0.69) 1.38 (0.47) 1.16 (0.54) 2.94 (1.35) 2.65 (0.87) 2.52 (0.97)
+P-value 0.00449328
+× 1.3247 1007 -
+× 1.49621 106 0.0017243 –Y.-W. Chung, et al. Applied Energy 254 (2019) 113732
+10charging cost. For scale-up, a considerable amount of EVs can be uti-
+lized to mitigatethe renewable energyintermittency issue such assolar
+duck-curve problem. Since the EPA algorithm can predict the EVs’
+availability very well, in combination with vehicle-to-grid (V2G) tech-
+nology, the charging CE can manage to charge EVs during the midday
+when solar power is ample and discharge during the evening to reduce
+the peak load. To control a large amount of EVs requires a distributed
+EV charging scheduling method. However, this method is beyond the
+discussion here and is elaborated in [34,37].
+7. Conclusion
+This paper develops an improved algorithm for EV user behavior
+prediction, namely the EPA. It is founded that, in general, predicting
+SMAPEs positively correlate to data sparsity/entropy ratio (R) but this
+relationship for GKDE andDKDE is relatively weak. Therefore, the KDE
+method can be utilized to handle the high R data with lower predictionerror. Based on this property and the analysis result, SVR, RF, andDKDE are selected to compose the EPA. The synergy of the three al-
+gorithms enhances the prediction performance where SVR is good at
+predictingEVstayduration,RFperformsbetteronenergyconsumption
+estimation,andDKDEtakes careoftheprediction withthe highRdata.
+The estimations by EPA are then applied to the optimal EV charging
+scheduling algorithm for load variation and charging cost minimiza-tion. Owing to the increased accuracy of the prediction, the scheduling
+algorithm can provide better EV chargingload management in terms of
+reducing load variation and charging cost. Real data is employed for a
+numerical simulation to demonstrate the improved prediction accuracy
+of EPA and validate the effectiveness of EV charging scheduling algo-
+rithm.
+TheproposedEPAalgorithmcanbeappliedtoanyscaleofcharging
+station, with an assumption that EVs’ charging records are known.
+However, to reach optimal scheduling within a distribution grid, the
+connection between each charging station is required. This can be
+achieved by adopting the Open Charge Point Protocol (OCPP), which is
+alreadyavailableonthemarket [38].Thedataentropyandsparsityare
+the data property that can be applied to other datasets. This paperpresents a preliminary result for how the different prediction algo-
+rithms relate to the property R. To apply the EPA to a different dataset,
+there is an advantage to use DKDE for high R data prediction since
+DKDE is not sensitive to the change of R. As for the methods for low R
+data, it would be different depending on the datasets.
+Fig. 14.Load profile using uCC and CC algorithms based on real data.
+Table 5
+Comparison between uCC with CC using real data and EPA.
+Algorithm PTP (kW) RMS (kW) Total Cost ($)
+CC_Real 307.13 139.59 219.94
+CC_EPA 300.50 139.24 219.25
+uCC 411.83 156.44 229.13
+Fig. 13.TOU price for the EV charging scheduling simulation [35].Y.-W. Chung, et al. Applied Energy 254 (2019) 113732
+11Appendix A. Supplementary material
+Supplementary data associated with this article can befound, in the
+online version, at https://doi.org/10.1016/j.apenergy.2019.113732.
+References
+[1] Loveday S. Plug-In electric vehicle sales report card; June 2019 [accessed: 07.25.
+2019]<https://insideevs.com/monthly-plug-in-sales-scorecard/>.
+[2] Veloz. Sales dashboard. [accessed: 07.25.2019] <https://www.veloz.org/sales-
+dashboard/>.
+[3] Mu Y, Wu J, Jenkins N, Jia H, Wang C. A spatial–temporal model for grid impact
+analysisofplug-inelectricvehicles.ApplEnergy2014;114:456–65. https://doi.org/
+10.1016/j.apenergy.2013.10.006.
+[4] Salah F, Ilg JP, Flath CM, Basse H, van Dinther C. Impact of electric vehicles on
+distribution substations: a Swiss case study. Appl Energy 2015;137:88–96. https://
+doi.org/10.1016/j.apenergy.2014.09.091.
+[5] FoleyA,TytherB,CalnanP,GallachóirB.Impactsofelectricvehiclechargingunder
+electricity market operations. Appl Energy 2013;101:93–102. https://doi.org/10.
+1016/j.apenergy.2012.06.052.
+[6] Johnson T. Americans spend an average of 17,600 minutes driving each year [ac-
+cessed: 11.10.2018] <https://newsroom.aaa.com/tag/american-driving-
+survey/>.
+[7] GanL,TopcuU,LowS.Optimaldecentralizedprotocolforelectricvehiclecharging.
+IEEE Trans Power Syst 2013;28(2):940–51. https://doi.org/10.1109/TPWRS.2012.
+2210288.
+[8] KristoffersenTK,CapionK,MeibomP.Optimalchargingofelectricdrivevehiclesin
+amarketenvironment.ApplEnergy2011;88(5):1940–8. https://doi.org/10.1016/j.
+apenergy.2010.12.015.
+[9] Gennaro MD, Paffumi E, Scholz H, Martini G. GIS-driven analysis of e-mobility in
+urban areas: an evaluation of the impact on the electric energy grid. Appl Energy
+2014;124:94–116. https://doi.org/10.1016/j.apenergy.2014.03.003.
+[10] Harris CB, Webber ME. An empirically-validated methodology to simulate elec-
+tricity demand for electric vehicle charging. Appl Energy 2014;126:172–81.
+https://doi.org/10.1016/j.apenergy.2014.03.078.
+[11] Wang H, Zhang X, Ouyang M. Energy consumption of electric vehicles based on
+real-world driving patterns: a case study of Beijing. Appl Energy 2015;157:710–9.https://doi.org/10.1016/j.apenergy.2015.05.057.
+[12] Smart Grid Energy Research Center (SMERC), UCLA, Smart grid project - smart EV
+charging station [accessed: 03.01.2018] <https://evsmartplug.net/smartgrid/
+ChargingRecord/>.
+[13] Xiong Y, Wang B, Cheng Chu C, Gadh R. Vehicle grid integration for demand re-
+sponse with mixture user model and decentralized optimization. Appl Energy
+2018;231:481–93. https://doi.org/10.1016/j.apenergy.2018.09.139.
+[14] Eatechnology.com, My electric avenue data [online]; 2016 [accessed: 03.01.2018]
+URL<https://www.eatechnology.com/americas/projects/my-electric-avenue/>.
+[15] MajidpourM,QiuC,ChuP,GadhR,PotaHR.Fastpredictionforsparsetimeseries:
+demand forecast of EVchargingstations for cellphone applications.IEEE Trans Ind
+Inform 2015;140(1):242–50. https://doi.org/10.1016/j.epsr.2016.06.003.
+[16] Amini MH, Kargarian A, Karabasoglu O. ARIMA-based decoupled time series
+forecasting of electric vehicle charging demand for stochastic power system op-
+eration. Electric Power Syst Res 2016;11:378–90. https://doi.org/10.1016/j.epsr.
+2016.06.003.
+[17] Wang B, Hu B, Qiu C, Chu P, Gadh R. EV charging algorithm implementation with
+userpricepreference.IEEEpowerenergysocietyinnovativesmartgridtechnologies
+conference (ISGT), 2015 2015. p. 1–5. https://doi.org/10.1109/ISGT.2015.7131895.
+[18] Xydas E, Marmaras C, Cipcigan LM, Jenkins N, Carroll S, Barker M. A data-driven
+approach for characterising the charging demand of electric vehicles: a UK casestudy. Appl Energy 2016;162:763–71. https://doi.org/10.1016/j.apenergy.2015.
+10.151.
+[19] Majidpour M, Qiu C, Chu P, Gadh R, Pota HR. A novel forecasting algorithm for
+electric vehicle charging stations. International conference on connected vehicles
+and expo (ICCVE), 2014 2014. p. 1035–40. https://doi.org/10.1109/ICCVE.2014.
+7297504.
+[20] Xu Z, Hu Z, Song Y, Zhao W, Zhang Y. Coordination of PEVs charging across
+multiple aggregators. Appl Energy 2014;136:582–9. https://doi.org/10.1016/j.
+apenergy.2014.08.116.
+[21] Majidpour M, Qiu C, Chu P, Pota HR, Gadh R. Forecasting the EV charging load
+based on customer profile or station measurement? Appl Energy 2016;163:134–41.https://doi.org/10.1016/j.apenergy.2015.10.184.
+[22] Wang B, Wang Y, Nazaripouya H, Qiu C, Chu C, Gadh R. Predictive scheduling
+framework for electric vehicles with uncertainties of user behaviors. IEEE Internet
+Things J 2017;4(1):52–63. https://doi.org/10.1109/JIOT.2016.2617314.
+[23] Wang Y, Shi W, Wang B, Chu C-C, Gadh R. Optimal operation of stationary and
+mobile batteries in distribution grids. Appl Energy 2017;190:1289–301. https://
+doi.org/10.1016/j.apenergy.2016.12.139.
+[24]Wang B, Huang R, Wang Y, Nazaripouya H, Qiu C, Chu C, et al. Predictive sche-duling for Electric Vehicles considering uncertainty of load and user behaviors.
+2016 IEEE/PES transmission and distribution conference and exposition (T&D
+2016). 2016. p. 1–5.
+[25]Silverman BW. Density estimation for statistics and data analysis. New York:
+Routledge; 1998.
+[26] Botev ZI, Grotowski JF, Kroese DP. Kernel density estimation via diffusion. Ann
+Statist 2010;38(5):2916–57. https://doi.org/10.1214/10-AOS799.
+[27] Khaki B, Chung YW, Chu C, Gadh R. Nonparametric user behavior prediction for
+distributedEVchargingscheduling.In:2018IEEEpowerandenergysocietygeneral
+meeting conf (PESGM 2018); 2018.
+[28] Chung YW, Khaki B, Chu C, Gadh R. Electric vehicle user behavior prediction using
+hybrid kernel density estimator. In: 2018 IEEE international conference on prob-
+abilistic methods applied to power systems (PMAPS 2018); 2018. p. 1–6.
+[29] BuitinckL,LouppeG,BlondelM,Pedregosa F,MuellerA,GriselO,etal.APIdesign
+for machine learning software: experiences from the scikit-learn project. In: ECMLPKDDworkshop:languagesfordataminingandmachinelearning;2013.p.108–22.
+[30]Vapnik V. The nature of statistical learning theory. Springer; 1995.
+[31] Smola AJ, Schölkopf B. A tutorial on support vector regression. Tech rep, Statistics
+and Computing; 2003.
+[32] Altman NS. An introduction to kernel and nearest-neighbor nonparametric regres-
+sion. Am Stat 1992;46(3):175–85. https://doi.org/10.1080/00031305.1992.
+10475879.
+[33]Cristopher MB. Pattern recognition and machine learning. Springer-Verlag; 2016.
+[34] Khaki B, Chu C, Gadh R. Hierarchical distributed framework for ev charging
+scheduling using exchange problem. Appl Energy 2019;241:461–71. https://doi.
+org/10.1016/j.apenergy.2019.03.008.
+[35] California Independent System Operator (CAISO). Locational marginal price
+[Online]; 2018 [accessed: 01.05.2018] <http://oasis.caiso.com>.
+[36]Keyhani A. Design of smart power grid renewable energy systems. 2nd ed. Wiley-IEEE Press; 2016.
+[37] Khaki B, Chung YW, Chu C, Gadh R. Hierarchical distributed EV charging sche-
+duling in distribution grids. In: 2019 IEEE power and energy society general
+meeting conf (PESGM 2019); 2019.
+[38] Open Charge Alliance, Global Platform for Open Protocols. [accessed: 07.25.2019]
+<https://www.openchargealliance.org>.Y.-W. Chung, et al.
+Applied Energy 254 (2019) 113732
+12
